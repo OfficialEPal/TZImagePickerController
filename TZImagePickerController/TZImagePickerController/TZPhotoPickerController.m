@@ -49,6 +49,13 @@
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 @property (nonatomic, assign) BOOL isSavingMedia;
 @property (nonatomic, assign) BOOL isFetchingMedia;
+@property (nonatomic, assign) BOOL notReloadLayout;
+
+// custom
+@property (nonatomic, strong) UIView *titleBGView;
+@property (nonatomic, strong) UIButton *titleButton;
+
+@property (nonatomic, assign) BOOL isAnimation;
 
 @end
 
@@ -80,6 +87,16 @@ static CGFloat itemMargin = 5;
     return _imagePickerVc;
 }
 
+- (TZAlbumPickerController *)albumPicker {
+    if (_albumPicker == nil) {
+        _albumPicker = [[TZAlbumPickerController alloc] init];
+        _albumPicker.view.hidden = YES;
+        _albumPicker.isFirstAppear = YES;
+        _albumPicker.columnNumber = _columnNumber;
+    }
+    return _albumPicker;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     if ([[TZImageManager manager] authorizationStatusAuthorized] || !SYSTEM_VERSION_GREATER_THAN_15) {
@@ -89,26 +106,46 @@ static CGFloat itemMargin = 5;
     TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
     _isSelectOriginalPhoto = tzImagePickerVc.isSelectOriginalPhoto;
     _shouldScrollToBottom = YES;
-    if (@available(iOS 13.0, *)) {
-        self.view.backgroundColor = UIColor.tertiarySystemBackgroundColor;
-    } else {
-        self.view.backgroundColor = [UIColor whiteColor];
+    
+    self.view.backgroundColor = tzImagePickerVc.backBgColor;
+    
+    UIImage *image = tzImagePickerVc.titlArrowImage;
+    
+    CGFloat width = [UIScreen mainScreen].bounds.size.width * 0.6;
+    UIView *titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, 40)];
+    self.titleBGView = [[UIView alloc] init];
+    [titleView addSubview:self.titleBGView];
+    self.titleBGView.hidden = ![[TZImageManager manager] authorizationStatusAuthorized];
+    self.titleBGView.layer.cornerRadius = 16.f;
+    self.titleBGView.center = CGPointMake(width * 0.5 - 7, 20);
+    if (tzImagePickerVc.needShowTitleCircle) {
+        self.titleBGView.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.1];
     }
-    self.navigationItem.title = _model.name;
-    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithTitle:tzImagePickerVc.cancelBtnTitleStr style:UIBarButtonItemStylePlain target:tzImagePickerVc action:@selector(cancelButtonClick)];
-    [TZCommonTools configBarButtonItem:cancelItem tzImagePickerVc:tzImagePickerVc];
-    self.navigationItem.rightBarButtonItem = cancelItem;
-    if (tzImagePickerVc.navLeftBarButtonSettingBlock) {
-        UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        leftButton.frame = CGRectMake(0, 0, 44, 44);
-        [leftButton addTarget:self action:@selector(navLeftBarButtonClick) forControlEvents:UIControlEventTouchUpInside];
-        tzImagePickerVc.navLeftBarButtonSettingBlock(leftButton);
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
-    } else if (tzImagePickerVc.childViewControllers.count) {
-        UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:[NSBundle tz_localizedStringForKey:@"Back"] style:UIBarButtonItemStylePlain target:self action:@selector(navLeftBarButtonClick)];
-        [TZCommonTools configBarButtonItem:backItem tzImagePickerVc:tzImagePickerVc];
-        [tzImagePickerVc.childViewControllers firstObject].navigationItem.backBarButtonItem = backItem;
-    }
+    
+    UIButton *titleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, width, 40)];
+    self.titleButton = titleButton;
+    titleButton.hidden = ![[TZImageManager manager] authorizationStatusAuthorized];
+    [titleView addSubview:titleButton];
+    titleButton.titleLabel.font = tzImagePickerVc.naviTitleFont;
+    [titleButton setTitle:_model.name forState:UIControlStateNormal];
+    [titleButton setTitleColor:tzImagePickerVc.naviTitleColor forState:UIControlStateNormal];
+    [titleButton setImage:image forState:UIControlStateNormal];
+    [titleButton addTarget:self action:@selector(titleTapAction) forControlEvents:UIControlEventTouchUpInside];
+    
+    CGFloat padding = 0;
+    //图片在右，文字在左
+    titleButton.titleEdgeInsets = UIEdgeInsetsMake(0, -(20 + padding/2), 0, (20 + padding/2));
+    [titleButton.titleLabel sizeToFit];
+    titleButton.imageEdgeInsets = UIEdgeInsetsMake(0, (titleButton.titleLabel.frame.size.width+ padding/2), 0, -(titleButton.titleLabel.frame.size.width+ padding/2));
+    self.titleBGView.bounds = CGRectMake(0, 0, titleButton.titleLabel.frame.size.width + 50, 32);
+    
+    self.navigationItem.titleView = titleView;
+    
+    // 返回
+    UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithImage:tzImagePickerVc.closeBtnImage style:(UIBarButtonItemStylePlain) target:tzImagePickerVc action:@selector(cancelButtonClick)];
+    [TZCommonTools configBarButtonItem:closeItem tzImagePickerVc:tzImagePickerVc];
+    self.navigationItem.leftBarButtonItem = closeItem;
+
     _showTakePhotoBtn = _model.isCameraRoll && ((tzImagePickerVc.allowTakePicture && tzImagePickerVc.allowPickingImage) || (tzImagePickerVc.allowTakeVideo && tzImagePickerVc.allowPickingVideo));
     _authorizationLimited = _model.isCameraRoll && [[TZImageManager manager] isPHAuthorizationStatusLimited];
     // [self resetCachedAssets];
@@ -179,11 +216,9 @@ static CGFloat itemMargin = 5;
     if (!_collectionView) {
         _layout = [[UICollectionViewFlowLayout alloc] init];
         _collectionView = [[TZCollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:_layout];
-        if (@available(iOS 13.0, *)) {
-            _collectionView.backgroundColor = UIColor.tertiarySystemBackgroundColor;
-        } else {
-            _collectionView.backgroundColor = [UIColor whiteColor];
-        }
+        
+        TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
+        _collectionView.backgroundColor = tzImagePickerVc.backBgColor;
         _collectionView.dataSource = self;
         _collectionView.delegate = self;
         _collectionView.alwaysBounceHorizontal = NO;
@@ -238,6 +273,26 @@ static CGFloat itemMargin = 5;
     [super viewDidAppear:animated];
     self.isFirstAppear = NO;
     // [self updateCachedAssets];
+    
+    // 这里需要把rootVC改了
+    NSArray *controllers = self.navigationController.viewControllers;
+    UIViewController *vc = controllers.firstObject;
+    if (![vc isEqual:self] && [controllers containsObject:self]) {
+        // 如果该vc不是root VC，需要设置一下
+        NSMutableArray *mControllers = [controllers mutableCopy];
+        for (int i = 0; i < controllers.count; i ++) {
+            UIViewController *tempVc = [controllers objectAtIndex:i];
+            if (![tempVc isEqual:self]) {
+                // 从前往后删除
+                [mControllers removeObject:tempVc];
+            } else {
+                break;
+            }
+        }
+        if (mControllers.count > 0) {
+            self.navigationController.viewControllers = [mControllers copy];
+        }
+    }
 }
 
 - (void)configBottomToolBar {
@@ -246,24 +301,14 @@ static CGFloat itemMargin = 5;
     if (!tzImagePickerVc.showSelectBtn) return;
     
     _bottomToolBar = [[UIView alloc] initWithFrame:CGRectZero];
-    CGFloat rgb = 253 / 255.0;
-    if (@available(iOS 13.0, *)) {
-        _bottomToolBar.backgroundColor = UIColor.tertiarySystemBackgroundColor;
-    } else {
-        _bottomToolBar.backgroundColor = [UIColor colorWithRed:rgb green:rgb blue:rgb alpha:1.0];
-    }
-    
+    _bottomToolBar.backgroundColor = tzImagePickerVc.backBgColor;
     _previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_previewButton addTarget:self action:@selector(previewButtonClick) forControlEvents:UIControlEventTouchUpInside];
     _previewButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [_previewButton setTitle:tzImagePickerVc.previewBtnTitleStr forState:UIControlStateNormal];
     [_previewButton setTitle:tzImagePickerVc.previewBtnTitleStr forState:UIControlStateDisabled];
-    if (@available(iOS 13.0, *)) {
-        [_previewButton setTitleColor:UIColor.labelColor forState:UIControlStateNormal];
-    } else {
-        [_previewButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    }
-    [_previewButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
+    [_previewButton setTitleColor:tzImagePickerVc.toolBarTextColor forState:UIControlStateNormal];
+    [_previewButton setTitleColor:tzImagePickerVc.toolBarTextDisabledColor forState:UIControlStateDisabled];
     _previewButton.enabled = tzImagePickerVc.selectedModels.count;
     
     if (tzImagePickerVc.allowPickingOriginalPhoto) {
@@ -273,12 +318,8 @@ static CGFloat itemMargin = 5;
         _originalPhotoButton.titleLabel.font = [UIFont systemFontOfSize:16];
         [_originalPhotoButton setTitle:tzImagePickerVc.fullImageBtnTitleStr forState:UIControlStateNormal];
         [_originalPhotoButton setTitle:tzImagePickerVc.fullImageBtnTitleStr forState:UIControlStateSelected];
-        [_originalPhotoButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-        if (@available(iOS 13.0, *)) {
-            [_originalPhotoButton setTitleColor:[UIColor labelColor] forState:UIControlStateSelected];
-        } else {
-            [_originalPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
-        }
+        [_originalPhotoButton setTitleColor:tzImagePickerVc.toolBarTextColor forState:UIControlStateNormal];
+        [_originalPhotoButton setTitleColor:tzImagePickerVc.toolBarTextDisabledColor forState:UIControlStateDisabled];
         [_originalPhotoButton setImage:tzImagePickerVc.photoOriginDefImage forState:UIControlStateNormal];
         [_originalPhotoButton setImage:tzImagePickerVc.photoOriginSelImage forState:UIControlStateSelected];
         _originalPhotoButton.imageView.clipsToBounds = YES;
@@ -288,23 +329,30 @@ static CGFloat itemMargin = 5;
         
         _originalPhotoLabel = [[UILabel alloc] init];
         _originalPhotoLabel.textAlignment = NSTextAlignmentLeft;
-        _originalPhotoLabel.font = [UIFont systemFontOfSize:16];
-        if (@available(iOS 13.0, *)) {
-            _originalPhotoLabel.textColor = [UIColor labelColor];
-        } else {
-            _originalPhotoLabel.textColor = [UIColor blackColor];
-        }
+        _originalPhotoLabel.font = tzImagePickerVc.toolBarTextFont;
+        _originalPhotoLabel.textColor = tzImagePickerVc.toolBarTextColor;
         if (_isSelectOriginalPhoto) [self getSelectedPhotoBytes];
     }
     
     _doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _doneButton.titleLabel.font = [UIFont systemFontOfSize:16];
+    _doneButton.titleLabel.font = tzImagePickerVc.doneBtnTextFont;
+    _doneButton.layer.cornerRadius = 14.0;
+    _doneButton.layer.masksToBounds = YES;
+    if (tzImagePickerVc.doneBtnNormalImage) {
+        [_doneButton setBackgroundImage:tzImagePickerVc.doneBtnNormalImage forState:UIControlStateNormal];
+    }
+    if (tzImagePickerVc.doneBtnDisableImage) {
+        [_doneButton setBackgroundImage:tzImagePickerVc.doneBtnDisableImage forState:UIControlStateDisabled];
+    }
+    
     [_doneButton addTarget:self action:@selector(doneButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [_doneButton setTitle:tzImagePickerVc.doneBtnTitleStr forState:UIControlStateNormal];
     [_doneButton setTitle:tzImagePickerVc.doneBtnTitleStr forState:UIControlStateDisabled];
     [_doneButton setTitleColor:tzImagePickerVc.oKButtonTitleColorNormal forState:UIControlStateNormal];
     [_doneButton setTitleColor:tzImagePickerVc.oKButtonTitleColorDisabled forState:UIControlStateDisabled];
     _doneButton.enabled = tzImagePickerVc.selectedModels.count || tzImagePickerVc.alwaysEnableDoneBtn;
+    // 刷新title显示
+    [self reloadDoneBtnTitle];
     
     _numberImageView = [[UIImageView alloc] initWithImage:tzImagePickerVc.photoNumberIconImage];
     _numberImageView.hidden = tzImagePickerVc.selectedModels.count <= 0;
@@ -318,28 +366,18 @@ static CGFloat itemMargin = 5;
     _numberLabel.textColor = [UIColor whiteColor];
     _numberLabel.textAlignment = NSTextAlignmentCenter;
     _numberLabel.text = [NSString stringWithFormat:@"%zd",tzImagePickerVc.selectedModels.count];
-    _numberLabel.hidden = tzImagePickerVc.selectedModels.count <= 0;
+//    _numberLabel.hidden = tzImagePickerVc.selectedModels.count <= 0;
     _numberLabel.backgroundColor = [UIColor clearColor];
     _numberLabel.userInteractionEnabled = YES;
-
+    // 新UI不显示这个
+    _numberLabel.hidden = YES;
+    _numberImageView.hidden = YES;
+    
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doneButtonClick)];
     [_numberLabel addGestureRecognizer:tapGesture];
     
     _divideLine = [[UIView alloc] init];
-    CGFloat rgb2 = 222 / 255.0;
-    if (@available(iOS 13.0, *)) {
-        UIColor *divideLineDyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
-            if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
-                return [UIColor colorWithRed:rgb2 green:rgb2 blue:rgb2 alpha:1.0];
-            } else {
-                CGFloat lineDarkRgb = 100 / 255.0;
-                return [UIColor colorWithRed:lineDarkRgb green:lineDarkRgb blue:lineDarkRgb alpha:1.0];
-            }
-        }];
-        _divideLine.backgroundColor = divideLineDyColor;
-    } else {
-        _divideLine.backgroundColor = [UIColor colorWithRed:rgb2 green:rgb2 blue:rgb2 alpha:1.0];
-    }
+    _divideLine.backgroundColor = tzImagePickerVc.toolBarLineColor;
     
     [_bottomToolBar addSubview:_divideLine];
     [_bottomToolBar addSubview:_previewButton];
@@ -355,10 +393,101 @@ static CGFloat itemMargin = 5;
     }
 }
 
+- (void)setupTitleText:(NSString *)text {
+    [self.titleButton setTitle:text forState:UIControlStateNormal];
+    
+    CGFloat padding = 0;
+    //图片在右，文字在左
+    self.titleButton.titleEdgeInsets = UIEdgeInsetsMake(0, -(20 + padding/2), 0, (20 + padding/2));
+    [self.titleButton.titleLabel sizeToFit];
+    self.titleButton.imageEdgeInsets = UIEdgeInsetsMake(0, (self.titleButton.titleLabel.frame.size.width+ padding/2), 0, -(self.titleButton.titleLabel.frame.size.width+ padding/2));
+    
+    self.titleBGView.bounds = CGRectMake(0, 0, self.titleButton.titleLabel.frame.size.width + 50, 32);
+}
+
+- (void)showAlbumPicker {
+    if (self.isAnimation) {
+        return;
+    }
+    BOOL isShow = self.albumPicker.view.hidden;
+    
+    TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
+    
+    self.isAnimation = YES;
+    if (isShow) {
+        // 计算frame
+        CGFloat frameY = _collectionView.frame.origin.y;
+        CGFloat width = [UIScreen mainScreen].bounds.size.width;
+        CGFloat height = [UIScreen mainScreen].bounds.size.height;
+        CGFloat statusBarHeight = 0;
+        // 获取状态栏高度
+        if (@available(iOS 13.0, *)) {
+            UIStatusBarManager *statusBarManager = [UIApplication sharedApplication].windows.firstObject.windowScene.statusBarManager;
+            statusBarHeight = statusBarManager.statusBarFrame.size.height;
+        }
+        else {
+            statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+        }
+        // 顶部间距
+        CGFloat topOffset = statusBarHeight + 44;
+        
+        self.albumPicker.view.alpha = 0.5;
+        self.albumPicker.view.hidden = NO;
+        self.albumPicker.view.frame = CGRectMake(0, -height, width, 0);
+        [self.view addSubview:self.albumPicker.view];
+        // 需要显示
+        [UIView animateWithDuration:0.35 delay:0 options:(UIViewAnimationOptionCurveEaseOut) animations:^{
+            self.albumPicker.view.alpha = 1.0;
+            self.albumPicker.view.frame = CGRectMake(0, frameY, width, height - topOffset);
+            
+            UIImage *image = tzImagePickerVc.titlArrowImage;
+            UIImage *flipImage = [UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:UIImageOrientationDown];
+            [self.titleButton setImage:flipImage forState:UIControlStateNormal];
+        } completion:^(BOOL finished) {
+            self.isAnimation = NO;
+        }];
+        
+    } else {
+        // 需要隐藏
+        [UIView animateWithDuration:0.35 delay:0 options:(UIViewAnimationOptionCurveEaseIn) animations:^{
+            CGSize size = self.albumPicker.view.frame.size;
+            self.albumPicker.view.alpha = 0.4;
+            self.albumPicker.view.frame = CGRectMake(0, -(size.height), size.width, size.height);
+            
+            UIImage *image = tzImagePickerVc.titlArrowImage;
+            UIImage *flipImage = [UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:UIImageOrientationUp];
+            [self.titleButton setImage:flipImage forState:UIControlStateNormal];
+        } completion:^(BOOL finished) {
+            self.isAnimation = NO;
+            self.albumPicker.view.hidden = YES;
+            [self.albumPicker.view removeFromSuperview];
+        }];
+    }
+}
+
+// 刷新完成按钮的title
+- (void)reloadDoneBtnTitle {
+    TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
+    // 带数字显示
+    if (tzImagePickerVc.selectedModels.count > 0) {
+        NSString *title = [NSString stringWithFormat:@"%@(%zd)", tzImagePickerVc.doneBtnTitleStr, tzImagePickerVc.selectedModels.count];
+        [_doneButton setTitle:title forState:UIControlStateNormal];
+    } else {
+        [_doneButton setTitle:tzImagePickerVc.doneBtnTitleStr forState:UIControlStateNormal];
+    }
+    
+    [_doneButton sizeToFit];
+    _doneButton.frame = CGRectMake(self.view.tz_width - _doneButton.tz_width - 12 - 20, 12, MAX(44, _doneButton.tz_width + 20), 28);
+}
+
 #pragma mark - Layout
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    // 这里不要一直重复执行
+    if (self.notReloadLayout) {
+        return;
+    }
     
     TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
     
@@ -421,7 +550,8 @@ static CGFloat itemMargin = 5;
     
     [TZImageManager manager].columnNumber = [TZImageManager manager].columnNumber;
     [TZImageManager manager].photoWidth = tzImagePickerVc.photoWidth;
-    [self.collectionView reloadData];
+    [TZImageManager manager].photoWidth = tzImagePickerVc.photoWidth;
+//    [self.collectionView reloadData];
     
     if (tzImagePickerVc.photoPickerPageDidLayoutSubviewsBlock) {
         tzImagePickerVc.photoPickerPageDidLayoutSubviewsBlock(_collectionView, _bottomToolBar, _previewButton, _originalPhotoButton, _originalPhotoLabel, _doneButton, _numberImageView, _numberLabel, _divideLine);
@@ -435,9 +565,29 @@ static CGFloat itemMargin = 5;
 }
 
 #pragma mark - Click Event
+- (void)titleTapAction {
+    NSLog(@"titleTapAction");
+    self.notReloadLayout = YES;
+    if (self.albumPicker) {
+        __weak typeof(self) weakSelf = self;
+        TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
+        self.albumPicker.view.backgroundColor = tzImagePickerVc.backBgColor;
+        self.albumPicker.selectedBlock = ^(TZAlbumModel *model) {
+            weakSelf.model = model;
+            weakSelf.notReloadLayout = NO;
+            [weakSelf setupTitleText:model.name];
+            [weakSelf reloadImageData];
+            [weakSelf showAlbumPicker];
+        };
+        [self addChildViewController:self.albumPicker];
+        [self showAlbumPicker];
+    }
+}
+
 - (void)navLeftBarButtonClick{
     [self.navigationController popViewControllerAnimated:YES];
 }
+
 - (void)previewButtonClick {
     TZPhotoPreviewController *photoPreviewVc = [[TZPhotoPreviewController alloc] init];
     [self pushPhotoPrevireViewController:photoPreviewVc needCheckSelectedModels:YES];
@@ -527,7 +677,8 @@ static CGFloat itemMargin = 5;
     [tzImagePickerVc hideProgressHUD];
     _doneButton.enabled = YES;
     self.isFetchingMedia = NO;
-
+    [self reloadDoneBtnTitle];
+    
     if (tzImagePickerVc.autoDismiss) {
         [self.navigationController dismissViewControllerAnimated:YES completion:^{
             [self callDelegateMethodWithPhotos:photos assets:assets infoArr:infoArr];
@@ -864,8 +1015,11 @@ static CGFloat itemMargin = 5;
     _previewButton.enabled = tzImagePickerVc.selectedModels.count > 0;
     _doneButton.enabled = tzImagePickerVc.selectedModels.count > 0 || tzImagePickerVc.alwaysEnableDoneBtn;
     
-    _numberImageView.hidden = tzImagePickerVc.selectedModels.count <= 0;
-    _numberLabel.hidden = tzImagePickerVc.selectedModels.count <= 0;
+    [self reloadDoneBtnTitle];
+    // 新UI不显示这个
+    _numberImageView.hidden = YES;
+    // 新UI不显示这个
+    _numberLabel.hidden = YES;
     _numberLabel.text = [NSString stringWithFormat:@"%zd",tzImagePickerVc.selectedModels.count];
     
     _originalPhotoButton.enabled = tzImagePickerVc.selectedModels.count > 0;
@@ -993,6 +1147,14 @@ static CGFloat itemMargin = 5;
             [strongImagePickerVc.pickerDelegate imagePickerController:strongImagePickerVc didDeselectAsset:asset photo:photo isSelectOriginalPhoto:strongSelf.isSelectOriginalPhoto];
         }
     }];
+}
+
+#pragma mark - public
+- (void)reloadImageData {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.model refreshFetchResult];
+        [self fetchAssetModels];
+    });
 }
 
 #pragma mark - UIImagePickerControllerDelegate

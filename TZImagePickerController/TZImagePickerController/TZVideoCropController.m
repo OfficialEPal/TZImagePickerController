@@ -122,10 +122,19 @@
     [self.view addSubview:_cancelButton];
     
     _doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _doneButton.titleLabel.font = [UIFont systemFontOfSize:16];
+    _doneButton.titleLabel.font = self.imagePickerVc.doneBtnTextFont;
+    _doneButton.layer.cornerRadius = 14.0;
+    _doneButton.layer.masksToBounds = YES;
     [_doneButton addTarget:self action:@selector(doneButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [_doneButton setTitle:self.imagePickerVc.doneBtnTitleStr forState:UIControlStateNormal];
     [_doneButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    if (self.imagePickerVc.doneBtnNormalImage) {
+        [_doneButton setBackgroundImage:self.imagePickerVc.doneBtnNormalImage forState:UIControlStateNormal];
+        [_doneButton setTitleColor:self.imagePickerVc.oKButtonTitleColorNormal forState:UIControlStateNormal];
+    }
+    if (self.imagePickerVc.doneBtnDisableImage) {
+        [_doneButton setBackgroundImage:self.imagePickerVc.doneBtnDisableImage forState:UIControlStateDisabled];
+    }
     [_doneButton setTitleColor:self.imagePickerVc.oKButtonTitleColorDisabled forState:UIControlStateDisabled];
     [self.view addSubview:_doneButton];
     

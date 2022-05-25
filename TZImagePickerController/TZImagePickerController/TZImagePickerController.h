@@ -161,6 +161,7 @@
 
 /// The photos user have selected
 /// 用户选中过的图片数组
+@property (nonatomic, strong) TZAlbumModel *selectedAlbum;
 @property (nonatomic, strong) NSMutableArray *selectedAssets;
 @property (nonatomic, strong) NSMutableArray<TZAssetModel *> *selectedModels;
 @property (nonatomic, strong) NSMutableArray *selectedAssetIds;
@@ -210,7 +211,7 @@
 @property (nonatomic, copy) void (^gifPreviewPageDidLayoutSubviewsBlock)(UIView *toolBar, UIButton *doneButton);
 @property (nonatomic, copy) void (^albumPickerPageDidLayoutSubviewsBlock)(UITableView *tableView);
 @property (nonatomic, copy) void (^assetCellDidLayoutSubviewsBlock)(TZAssetCell *cell, UIImageView *imageView, UIImageView *selectImageView, UILabel *indexLabel, UIView *bottomView, UILabel *timeLength, UIImageView *videoImgView);
-@property (nonatomic, copy) void (^albumCellDidLayoutSubviewsBlock)(TZAlbumCell *cell, UIImageView *posterImageView, UILabel *titleLabel);
+@property (nonatomic, copy) void (^albumCellDidLayoutSubviewsBlock)(TZAlbumCell *cell, UIImageView *posterImageView, UILabel *titleLabel, UILabel *descLabel);
 /// 自定义各页面/组件的frame】刷新底部状态(refreshNaviBarAndBottomBarState)使用的
 @property (nonatomic, copy) void (^photoPickerPageDidRefreshStateBlock)(UICollectionView *collectionView, UIView *bottomToolBar, UIButton *previewButton, UIButton *originalPhotoButton, UILabel *originalPhotoLabel, UIButton *doneButton, UIImageView *numberImageView, UILabel *numberLabel, UIView *divideLine);
 
@@ -222,6 +223,7 @@
 - (void)hideProgressHUD;
 @property (nonatomic, assign) BOOL isSelectOriginalPhoto;
 @property (assign, nonatomic) BOOL needShowStatusBar;
+@property (assign, nonatomic) BOOL needShowTitleCircle;
 
 #pragma mark -
 @property (nonatomic, copy) NSString *takePictureImageName __attribute__((deprecated("Use -takePictureImage.")));
@@ -239,6 +241,11 @@
 @property (nonatomic, strong) UIImage *photoOriginDefImage;
 @property (nonatomic, strong) UIImage *photoPreviewOriginDefImage;
 @property (nonatomic, strong) UIImage *photoNumberIconImage;
+@property (nonatomic, strong) UIImage *closeBtnImage;
+@property (nonatomic, strong) UIImage *titlArrowImage;
+@property (nonatomic, strong) UIImage *doneBtnNormalImage;
+@property (nonatomic, strong) UIImage *doneBtnDisableImage;
+
 
 #pragma mark -
 /// Appearance / 外观颜色 + 按钮文字
@@ -249,6 +256,12 @@
 @property (nonatomic, strong) UIFont *naviTitleFont;
 @property (nonatomic, strong) UIColor *barItemTextColor;
 @property (nonatomic, strong) UIFont *barItemTextFont;
+@property (nonatomic, strong) UIColor *backBgColor;
+@property (nonatomic, strong) UIColor *toolBarLineColor;
+@property (nonatomic, strong) UIFont *doneBtnTextFont;
+@property (nonatomic, strong) UIFont *toolBarTextFont;
+@property (nonatomic, strong) UIColor *toolBarTextColor;
+@property (nonatomic, strong) UIColor *toolBarTextDisabledColor;
 
 @property (nonatomic, copy) NSString *doneBtnTitleStr;
 @property (nonatomic, copy) NSString *cancelBtnTitleStr;
@@ -346,6 +359,10 @@
 @property (nonatomic, assign) NSInteger columnNumber;
 @property (assign, nonatomic) BOOL isFirstAppear;
 - (void)configTableView;
+
+// 选中
+@property (nonatomic, copy) void(^selectedBlock)(TZAlbumModel *model);
+
 @end
 
 

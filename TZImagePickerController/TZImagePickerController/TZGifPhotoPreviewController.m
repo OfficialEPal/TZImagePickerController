@@ -77,6 +77,16 @@
     [_doneButton addTarget:self action:@selector(doneButtonClick) forControlEvents:UIControlEventTouchUpInside];
     TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
     if (tzImagePickerVc) {
+        _doneButton.titleLabel.font = tzImagePickerVc.doneBtnTextFont;
+        _doneButton.layer.cornerRadius = 14.0;
+        _doneButton.layer.masksToBounds = YES;
+        if (tzImagePickerVc.doneBtnNormalImage) {
+            [_doneButton setBackgroundImage:tzImagePickerVc.doneBtnNormalImage forState:UIControlStateNormal];
+        }
+        if (tzImagePickerVc.doneBtnDisableImage) {
+            [_doneButton setBackgroundImage:tzImagePickerVc.doneBtnDisableImage forState:UIControlStateDisabled];
+        }
+        
         [_doneButton setTitle:tzImagePickerVc.doneBtnTitleStr forState:UIControlStateNormal];
         [_doneButton setTitleColor:tzImagePickerVc.oKButtonTitleColorNormal forState:UIControlStateNormal];
     } else {

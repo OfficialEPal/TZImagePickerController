@@ -66,6 +66,15 @@
     if (tzImagePickerVc) {
         [_doneButton setTitle:tzImagePickerVc.doneBtnTitleStr forState:UIControlStateNormal];
         [_doneButton setTitleColor:tzImagePickerVc.oKButtonTitleColorNormal forState:UIControlStateNormal];
+        _doneButton.titleLabel.font = tzImagePickerVc.doneBtnTextFont;
+        _doneButton.layer.cornerRadius = 14.0;
+        _doneButton.layer.masksToBounds = YES;
+        if (tzImagePickerVc.doneBtnNormalImage) {
+            [_doneButton setBackgroundImage:tzImagePickerVc.doneBtnNormalImage forState:UIControlStateNormal];
+        }
+        if (tzImagePickerVc.doneBtnDisableImage) {
+            [_doneButton setBackgroundImage:tzImagePickerVc.doneBtnDisableImage forState:UIControlStateDisabled];
+        }
     } else {
         [_doneButton setTitle:[NSBundle tz_localizedStringForKey:@"Done"] forState:UIControlStateNormal];
         [_doneButton setTitleColor:[UIColor colorWithRed:(83/255.0) green:(179/255.0) blue:(17/255.0) alpha:1.0] forState:UIControlStateNormal];
