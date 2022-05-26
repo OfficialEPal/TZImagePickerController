@@ -308,6 +308,7 @@
     self.toolBarTextFont = [UIFont systemFontOfSize:14];
     self.toolBarTextColor = [UIColor whiteColor];
     self.toolBarTextDisabledColor = [UIColor lightGrayColor];
+    self.naviSubTitleColor = [UIColor whiteColor];
     
     // 2.2.26版本，不主动缩放图片，降低内存占用
     self.notScaleImage = YES;
@@ -460,6 +461,8 @@
 }
 
 - (void)showProgressHUD {
+    // 不显示loading
+    return;
     if (!_progressHUD) {
         _progressHUD = [UIButton buttonWithType:UIButtonTypeCustom];
         [_progressHUD setBackgroundColor:[UIColor clearColor]];
