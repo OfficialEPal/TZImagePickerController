@@ -413,7 +413,7 @@
 - (void)setModel:(TZAlbumModel *)model {
     _model = model;
     
-    NSMutableAttributedString *nameString = [[NSMutableAttributedString alloc] initWithString:model.name attributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:16],NSForegroundColorAttributeName:self.titleColor}];
+    NSMutableAttributedString *nameString = [[NSMutableAttributedString alloc] initWithString:model.name.length ? model.name : @"" attributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:16],NSForegroundColorAttributeName:self.titleColor}];
     NSAttributedString *countString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"  (%zd)",model.count] attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:16],NSForegroundColorAttributeName:self.countColor}];
     [nameString appendAttributedString:countString];
     self.titleLabel.attributedText = nameString;
