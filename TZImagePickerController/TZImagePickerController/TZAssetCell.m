@@ -406,15 +406,17 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     self.backgroundColor = [UIColor clearColor];
-    self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    self.accessoryType = UITableViewCellAccessoryNone;
     return self;
 }
 
 - (void)setModel:(TZAlbumModel *)model {
     _model = model;
     
-    self.titleLabel.text = model.name;
-    self.countLabel.text = @(model.count).stringValue;
+    NSMutableAttributedString *nameString = [[NSMutableAttributedString alloc] initWithString:model.name attributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:16],NSForegroundColorAttributeName:self.titleColor}];
+    NSAttributedString *countString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"  (%zd)",model.count] attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:16],NSForegroundColorAttributeName:self.countColor}];
+    [nameString appendAttributedString:countString];
+    self.titleLabel.attributedText = nameString;
     
     [[TZImageManager manager] getPostImageWithAlbumModel:model completion:^(UIImage *postImage) {
         self.posterImageView.image = postImage;
@@ -434,10 +436,10 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    _selectedCountButton.frame = CGRectMake(self.contentView.tz_width - 24 - 16, 46, 24, 24);
-    self.titleLabel.frame = CGRectMake(112, 28, self.tz_width - 112 - 50, 24);
-    self.countLabel.frame = CGRectMake(112, 63, self.tz_width - 112 - 50, 24);
-    self.posterImageView.frame = CGRectMake(16, 16, 80, 80);
+    _selectedCountButton.frame = CGRectMake(self.contentView.tz_width - 24 - 16, 23, 24, 24);
+    NSInteger titleHeight = ceil(self.titleLabel.font.lineHeight);
+    self.titleLabel.frame = CGRectMake(80, (self.tz_height - titleHeight) / 2, self.tz_width - 80 - 50, titleHeight);
+    self.posterImageView.frame = CGRectMake(0, 0, 70, 70);
     
     if (self.albumCellDidLayoutSubviewsBlock) {
         self.albumCellDidLayoutSubviewsBlock(self, _posterImageView, _titleLabel, _countLabel);
@@ -455,8 +457,8 @@
         UIImageView *posterImageView = [[UIImageView alloc] init];
         posterImageView.contentMode = UIViewContentModeScaleAspectFill;
         posterImageView.clipsToBounds = YES;
-        posterImageView.layer.cornerRadius = 16.f;
-        posterImageView.layer.masksToBounds = YES;
+//        posterImageView.layer.cornerRadius = 16.f;
+//        posterImageView.layer.masksToBounds = YES;
         [self.contentView addSubview:posterImageView];
         _posterImageView = posterImageView;
     }
@@ -524,8 +526,6 @@
         _imageView = [[UIImageView alloc] init];
         _imageView.backgroundColor = [UIColor colorWithRed:71/255.0 green:70/255.0 blue:100/255.0 alpha:1];
         _imageView.contentMode = UIViewContentModeScaleAspectFill;
-        _imageView.layer.cornerRadius = 16.f;
-        _imageView.layer.masksToBounds = YES;
         [self.contentView addSubview:_imageView];
         self.clipsToBounds = YES;
     }
