@@ -52,11 +52,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.needShowStatusBar = ![UIApplication sharedApplication].statusBarHidden;
-    if (@available(iOS 13.0, *)) {
-        self.view.backgroundColor = UIColor.tertiarySystemBackgroundColor;
-    } else {
-        self.view.backgroundColor = [UIColor whiteColor];
-    }
+//    if (@available(iOS 13.0, *)) {
+//        self.view.backgroundColor = UIColor.tertiarySystemBackgroundColor;
+//    } else {
+//        self.view.backgroundColor = [UIColor whiteColor];
+//    }
+    self.view.backgroundColor = self.backBgColor;
+    
     self.navigationBar.barStyle = UIBarStyleBlack;
     self.navigationBar.translucent = YES;
     [TZImageManager manager].shouldFixOrientation = NO;
@@ -332,8 +334,8 @@
     self.photoOriginDefImageName = @"photo_original_def";
     self.photoOriginSelImageName = @"photo_original_sel";
     self.addMorePhotoImage = [UIImage tz_imageNamedFromMyBundle:@"addMore"];
-    self.titlArrowImage = [UIImage imageNamed:@"bottom_arrow"];
-    self.closeBtnImage = [UIImage imageNamed:@"btn_close"];
+    self.titlArrowImage = [UIImage tz_imageNamedFromMyBundle:@"arrow_bottom"];
+    self.closeBtnImage = [UIImage tz_imageNamedFromMyBundle:@"back_close_white"];
 }
 
 - (void)setTakePictureImageName:(NSString *)takePictureImageName {
