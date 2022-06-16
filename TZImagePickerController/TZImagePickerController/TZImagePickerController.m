@@ -94,6 +94,7 @@
     NSMutableDictionary *textAttrs = [NSMutableDictionary dictionary];
     if (self.naviTitleColor) {
         textAttrs[NSForegroundColorAttributeName] = self.naviTitleColor;
+        _tipLabel.textColor = self.naviTitleColor;
     }
     if (self.naviTitleFont) {
         textAttrs[NSFontAttributeName] = self.naviTitleFont;
@@ -200,8 +201,6 @@
         self.autoDismiss = YES;
         self.columnNumber = columnNumber;
         [self configDefaultSetting];
-        // 将选择图片页面作为主显页面
-        [self pushPhotoPickerVc];
         
         if (![[TZImageManager manager] authorizationStatusAuthorized]) {
             _tipLabel = [[UILabel alloc] init];
@@ -209,7 +208,7 @@
             _tipLabel.textAlignment = NSTextAlignmentCenter;
             _tipLabel.numberOfLines = 0;
             _tipLabel.font = [UIFont systemFontOfSize:16];
-            _tipLabel.textColor = [UIColor blackColor];
+            _tipLabel.textColor = self.naviTitleColor;
             _tipLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
             NSString *appName = [TZCommonTools tz_getAppName];
@@ -229,6 +228,9 @@
             if ([PHPhotoLibrary authorizationStatus] == 0) {
                 _timer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(observeAuthrizationStatusChange) userInfo:nil repeats:NO];
             }
+        } else {
+            // 将选择图片页面作为主显页面
+            [self pushPhotoPickerVc];
         }
     }
     return self;
