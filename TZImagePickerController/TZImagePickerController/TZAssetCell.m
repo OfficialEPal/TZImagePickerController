@@ -412,7 +412,12 @@
 
 - (void)setModel:(TZAlbumModel *)model {
     _model = model;
-    
+    if (!self.titleColor) {
+        self.titleColor = [UIColor whiteColor];
+    }
+    if (!self.countColor) {
+        self.countColor = [UIColor whiteColor];
+    }
     NSMutableAttributedString *nameString = [[NSMutableAttributedString alloc] initWithString:model.name.length ? model.name : @"" attributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:16],NSForegroundColorAttributeName:self.titleColor}];
     NSAttributedString *countString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"  (%zd)",model.count] attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:16],NSForegroundColorAttributeName:self.countColor}];
     [nameString appendAttributedString:countString];
