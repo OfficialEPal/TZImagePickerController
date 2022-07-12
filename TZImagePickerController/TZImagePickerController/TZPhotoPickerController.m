@@ -771,11 +771,17 @@ static CGFloat itemMargin = 5;
     cell.assetCellDidSetModelBlock = tzImagePickerVc.assetCellDidSetModelBlock;
     cell.assetCellDidLayoutSubviewsBlock = tzImagePickerVc.assetCellDidLayoutSubviewsBlock;
     TZAssetModel *model;
+    NSInteger index = 0;
     if (tzImagePickerVc.sortAscendingByModificationDate) {
-        model = _models[indexPath.item];
+        index = indexPath.item;
     } else {
         NSInteger diff = [self getAllCellCount] - _models.count;
-        model = _models[indexPath.item - diff];;
+        index = indexPath.item - diff;
+    }
+    if (index >= _models.count) {
+        model = _models.lastObject;
+    } else {
+        model = _models[index];
     }
     cell.allowPickingGif = tzImagePickerVc.allowPickingGif;
     cell.model = model;
