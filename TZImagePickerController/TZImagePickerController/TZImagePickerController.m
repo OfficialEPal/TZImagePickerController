@@ -51,25 +51,19 @@
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.needShowStatusBar = ![UIApplication sharedApplication].statusBarHidden;
-//    if (@available(iOS 13.0, *)) {
-//        self.view.backgroundColor = UIColor.tertiarySystemBackgroundColor;
-//    } else {
-//        self.view.backgroundColor = [UIColor whiteColor];
-//    }
     self.view.backgroundColor = self.backBgColor;
     
     self.navigationBar.barStyle = UIBarStyleBlack;
-    self.navigationBar.translucent = YES;
+    self.navigationBar.translucent = NO;
     [TZImageManager manager].shouldFixOrientation = NO;
 
     // Default appearance, you can reset these after this method
-    // 默认的外观，你可以在这个方法后重置
-    self.oKButtonTitleColorNormal   = [UIColor colorWithRed:(83/255.0) green:(179/255.0) blue:(17/255.0) alpha:1.0];
-    self.oKButtonTitleColorDisabled = [UIColor colorWithRed:(83/255.0) green:(179/255.0) blue:(17/255.0) alpha:0.5];
     
-    self.navigationBar.barTintColor = [UIColor colorWithRed:(34/255.0) green:(34/255.0)  blue:(34/255.0) alpha:1.0];
-    self.navigationBar.tintColor = [UIColor whiteColor];
+    // 默认的外观，你可以在这个方法后重置
+    self.navigationBar.barTintColor = self.naviBgColor;
+    
     self.automaticallyAdjustsScrollViewInsets = NO;
     if (self.needShowStatusBar) [UIApplication sharedApplication].statusBarHidden = NO;
 }
@@ -310,7 +304,6 @@
     self.toolBarTextFont = [UIFont systemFontOfSize:14];
     self.toolBarTextColor = [UIColor whiteColor];
     self.toolBarTextDisabledColor = [UIColor lightGrayColor];
-    self.naviSubTitleColor = [UIColor whiteColor];
     
     // 2.2.26版本，不主动缩放图片，降低内存占用
     self.notScaleImage = YES;
@@ -844,7 +837,7 @@
                 
                 if (!self->_tableView) {
                     self->_tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-                    self->_tableView.rowHeight = 70;
+                    self->_tableView.rowHeight = 108;
                     self->_tableView.backgroundColor = imagePickerVc.backBgColor;
                     self->_tableView.tableFooterView = [[UIView alloc] init];
                     self->_tableView.dataSource = self;
@@ -860,6 +853,16 @@
             });
         }];
     });
+}
+
+- (void)showTableViewAnimation:(BOOL)isShow {
+    CGRect rect = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y, _tableView.frame.size.width, _tableView.frame.size.height);
+    if (isShow) {
+        rect.origin.y = 0;
+    } else {
+        rect.origin.y = -80;
+    }
+    _tableView.frame = rect;
 }
 
 - (void)dealloc {
@@ -897,10 +900,9 @@
     if (_tableView.frame.size.height > 0) {
         return;
     }
-    CGFloat top = 0;
     CGFloat tableViewHeight = 0;
     tableViewHeight = self.view.tz_height;
-    _tableView.frame = CGRectMake(0, top, self.view.tz_width, tableViewHeight);
+    _tableView.frame = CGRectMake(0, 0, self.view.tz_width, tableViewHeight);
     TZImagePickerController *imagePickerVc = (TZImagePickerController *)self.navigationController;
     if (imagePickerVc.albumPickerPageDidLayoutSubviewsBlock) {
         imagePickerVc.albumPickerPageDidLayoutSubviewsBlock(_tableView);
@@ -918,9 +920,7 @@
     TZImagePickerController *imagePickerVc = (TZImagePickerController *)self.navigationController;
     cell.albumCellDidLayoutSubviewsBlock = imagePickerVc.albumCellDidLayoutSubviewsBlock;
     cell.albumCellDidSetModelBlock = imagePickerVc.albumCellDidSetModelBlock;
-    cell.selectedCountButton.backgroundColor = imagePickerVc.iconThemeColor;
-    cell.titleColor = imagePickerVc.naviTitleColor;
-    cell.countColor = imagePickerVc.naviSubTitleColor;
+    [cell.selectedCountButton setImage:imagePickerVc.photoSingleSelImage forState:UIControlStateNormal];
     cell.model = _albumArr[indexPath.row];
     cell.accessoryType = UITableViewCellAccessoryNone;
     return cell;

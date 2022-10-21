@@ -356,12 +356,12 @@
     } else {
         _selectPhotoButton.frame = self.bounds;
     }
-    _selectImageView.frame = CGRectMake(self.tz_width - 27, 3, 24, 24);
-    if (_selectImageView.image.size.width <= 27) {
-        _selectImageView.contentMode = UIViewContentModeCenter;
-    } else {
-        _selectImageView.contentMode = UIViewContentModeScaleAspectFit;
-    }
+    _selectImageView.frame = CGRectMake(self.tz_width - 28, 8, 20, 20);
+//    if (_selectImageView.image.size.width <= 27) {
+//        _selectImageView.contentMode = UIViewContentModeCenter;
+//    } else {
+//        _selectImageView.contentMode = UIViewContentModeScaleAspectFit;
+//    }
     _indexLabel.frame = _selectImageView.frame;
     _imageView.frame = self.bounds;
 
@@ -412,20 +412,14 @@
 
 - (void)setModel:(TZAlbumModel *)model {
     _model = model;
-    if (!self.titleColor) {
-        self.titleColor = [UIColor whiteColor];
-    }
-    if (!self.countColor) {
-        self.countColor = [UIColor whiteColor];
-    }
-    NSMutableAttributedString *nameString = [[NSMutableAttributedString alloc] initWithString:model.name.length ? model.name : @"" attributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:16],NSForegroundColorAttributeName:self.titleColor}];
-    NSAttributedString *countString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"  (%zd)",model.count] attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:16],NSForegroundColorAttributeName:self.countColor}];
-    [nameString appendAttributedString:countString];
-    self.titleLabel.attributedText = nameString;
+   
+    self.titleLabel.text = model.name;
+    self.countLabel.text = @(model.count).stringValue;
     
+    __weak typeof(self) weakSelf = self;
     [[TZImageManager manager] getPostImageWithAlbumModel:model completion:^(UIImage *postImage) {
-        self.posterImageView.image = postImage;
-        [self setNeedsLayout];
+        weakSelf.posterImageView.image = postImage;
+        [weakSelf setNeedsLayout];
     }];
     
     if (model.isCurrentSelected) {
@@ -441,10 +435,13 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    _selectedCountButton.frame = CGRectMake(self.contentView.tz_width - 24 - 16, 23, 24, 24);
-    NSInteger titleHeight = ceil(self.titleLabel.font.lineHeight);
-    self.titleLabel.frame = CGRectMake(80, (self.tz_height - titleHeight) / 2, self.tz_width - 80 - 50, titleHeight);
-    self.posterImageView.frame = CGRectMake(0, 0, 70, 70);
+    self.posterImageView.frame = CGRectMake(24, 24, 60, 60);
+    self.selectedCountButton.frame = CGRectMake(self.contentView.tz_width - 20 - 24, 44, 20, 20);
+    
+    NSInteger titleHeight = 24;
+    self.titleLabel.frame = CGRectMake(96, 24, self.tz_width - 96 - 52, titleHeight);
+    self.countLabel.frame = CGRectMake(96, 56, self.tz_width - 96 - 52, titleHeight);
+    self.lineView.frame = CGRectMake(24, 106.5, self.tz_width - 24 - 24, 1);
     
     if (self.albumCellDidLayoutSubviewsBlock) {
         self.albumCellDidLayoutSubviewsBlock(self, _posterImageView, _titleLabel, _countLabel);
@@ -462,23 +459,27 @@
         UIImageView *posterImageView = [[UIImageView alloc] init];
         posterImageView.contentMode = UIViewContentModeScaleAspectFill;
         posterImageView.clipsToBounds = YES;
-//        posterImageView.layer.cornerRadius = 16.f;
-//        posterImageView.layer.masksToBounds = YES;
+        posterImageView.layer.cornerRadius = 8.f;
+        posterImageView.layer.masksToBounds = YES;
         [self.contentView addSubview:posterImageView];
         _posterImageView = posterImageView;
     }
     return _posterImageView;
 }
 
+- (UIView *)lineView {
+    if (_lineView == nil) {
+        UIView *view = [[UIView alloc] init];
+        [self.contentView addSubview:_lineView];
+        _lineView = view;
+    }
+    return _lineView;
+}
+
 - (UILabel *)titleLabel {
     if (_titleLabel == nil) {
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.font = [UIFont boldSystemFontOfSize:17];
-        if (@available(iOS 13.0, *)) {
-            titleLabel.textColor = UIColor.labelColor;
-        } else {
-            titleLabel.textColor = [UIColor blackColor];
-        }
         titleLabel.textAlignment = NSTextAlignmentLeft;
         [self.contentView addSubview:titleLabel];
         _titleLabel = titleLabel;
@@ -490,11 +491,6 @@
     if (_countLabel == nil) {
         UILabel *countLabel = [[UILabel alloc] init];
         countLabel.font = [UIFont systemFontOfSize:14];
-        if (@available(iOS 13.0, *)) {
-            countLabel.textColor = UIColor.labelColor;
-        } else {
-            countLabel.textColor = [UIColor blackColor];
-        }
         countLabel.textAlignment = NSTextAlignmentLeft;
         [self.contentView addSubview:countLabel];
         _countLabel = countLabel;
@@ -506,7 +502,7 @@
     if (_selectedCountButton == nil) {
         UIButton *selectedCountButton = [[UIButton alloc] init];
         selectedCountButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        selectedCountButton.layer.cornerRadius = 12;
+        selectedCountButton.layer.cornerRadius = 10;
         selectedCountButton.clipsToBounds = YES;
         selectedCountButton.backgroundColor = [UIColor redColor];
         [selectedCountButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];

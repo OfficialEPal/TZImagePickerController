@@ -279,8 +279,33 @@
     // 设置languageBundle以使用其它语言，必须在TZImagePickerController初始化前设置 / Set languageBundle to use other language
     // [TZImagePickerConfig sharedInstance].languageBundle = [NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"tz-ru" ofType:@"lproj"]];
 
-    TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:self.maxCountTF.text.integerValue columnNumber:self.columnNumberTF.text.integerValue delegate:self pushPhotoPickerVc:YES];
+    TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:6 columnNumber:3 delegate:self pushPhotoPickerVc:YES];
+    imagePickerVc.sortAscendingByModificationDate = NO;
+    imagePickerVc.allowPickingOriginalPhoto = NO;
+    imagePickerVc.allowPickingVideo = NO;
+    imagePickerVc.allowTakePicture = YES;
+    imagePickerVc.allowCameraLocation = NO;
+    imagePickerVc.allowTakeVideo = NO;
+    imagePickerVc.showPhotoCannotSelectLayer = YES;
+    imagePickerVc.cannotSelectLayerColor = [[UIColor whiteColor] colorWithAlphaComponent:0.8];
+    imagePickerVc.statusBarStyle = [UIApplication sharedApplication].statusBarStyle;
+    imagePickerVc.showSelectedIndex = YES;
     
+    imagePickerVc.naviBgColor = [UIColor colorWithRed:19/255.0 green:19/255.0 blue:26/255.0 alpha:1];
+    imagePickerVc.naviTitleColor = [UIColor whiteColor];
+    imagePickerVc.naviTitleSelectColor = [UIColor redColor];
+    imagePickerVc.naviTitleFont = [UIFont boldSystemFontOfSize:16];
+    imagePickerVc.backBgColor = [UIColor colorWithRed:19/255.0 green:19/255.0 blue:26/255.0 alpha:1];
+    
+    imagePickerVc.toolBarLineColor = [UIColor colorWithRed:19/255.0 green:19/255.0 blue:26/255.0 alpha:1];
+    
+    imagePickerVc.oKButtonTitleColorNormal   = [UIColor whiteColor];
+    imagePickerVc.oKButtonTitleColorDisabled = [UIColor grayColor];
+    
+    
+    imagePickerVc.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:imagePickerVc animated:YES completion:nil];
+    return;
 #pragma mark - 五类个性化设置，这些参数都可以不传，此时会走默认设置
     imagePickerVc.isSelectOriginalPhoto = _isSelectOriginalPhoto;
     

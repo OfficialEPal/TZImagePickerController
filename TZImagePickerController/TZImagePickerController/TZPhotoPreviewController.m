@@ -111,8 +111,8 @@
     [_backButton addTarget:self action:@selector(backButtonClick) forControlEvents:UIControlEventTouchUpInside];
     
     _selectButton = [[UIButton alloc] initWithFrame:CGRectZero];
-    [_selectButton setImage:tzImagePickerVc.photoDefImage forState:UIControlStateNormal];
-    [_selectButton setImage:tzImagePickerVc.photoSelImage forState:UIControlStateSelected];
+    [_selectButton setImage:tzImagePickerVc.photoSingleSelImage forState:UIControlStateNormal];
+    [_selectButton setImage:tzImagePickerVc.photoSingleDefImage forState:UIControlStateSelected];
     _selectButton.imageView.clipsToBounds = YES;
     _selectButton.imageEdgeInsets = UIEdgeInsetsMake(10, 0, 10, 0);
     _selectButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -171,6 +171,9 @@
     [_doneButton addTarget:self action:@selector(doneButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [_doneButton setTitle:_tzImagePickerVc.doneBtnTitleStr forState:UIControlStateNormal];
     [_doneButton setTitleColor:_tzImagePickerVc.oKButtonTitleColorNormal forState:UIControlStateNormal];
+    [_doneButton setTitleColor:_tzImagePickerVc.oKButtonTitleColorDisabled forState:UIControlStateDisabled];
+    [_doneButton setBackgroundImage:_tzImagePickerVc.doneBtnNormalImage forState:UIControlStateNormal];
+    [_doneButton setBackgroundImage:_tzImagePickerVc.doneBtnDisableImage forState:UIControlStateDisabled];
     
     _numberImageView = [[UIImageView alloc] initWithImage:_tzImagePickerVc.photoNumberIconImage];
     _numberImageView.backgroundColor = [UIColor clearColor];
@@ -304,7 +307,7 @@
     }
     [_doneButton sizeToFit];
     CGFloat doneWidth = MAX(44, _doneButton.tz_width + 20);
-    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 12, 12, doneWidth, 28);
+    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 12, 10, doneWidth, 32);
     _numberImageView.frame = CGRectMake(_doneButton.tz_left - 24 - 5, 10, 24, 24);
     _numberLabel.frame = _numberImageView.frame;
     
@@ -677,7 +680,7 @@
     
     [_doneButton sizeToFit];
     CGFloat doneWidth = MAX(44, _doneButton.tz_width + 20);
-    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 12, 12, doneWidth, 28);
+    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 12, 10, doneWidth, 32);
 }
 
 - (void)showPhotoBytes {

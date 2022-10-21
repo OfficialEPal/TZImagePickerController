@@ -235,8 +235,10 @@
 @property (nonatomic, copy) NSString *photoNumberIconImageName __attribute__((deprecated("Use -photoNumberIconImage.")));
 @property (nonatomic, strong) UIImage *takePictureImage;
 @property (nonatomic, strong) UIImage *addMorePhotoImage;
-@property (nonatomic, strong) UIImage *photoSelImage;
-@property (nonatomic, strong) UIImage *photoDefImage;
+@property (nonatomic, strong) UIImage *photoSelImage;  // 多选
+@property (nonatomic, strong) UIImage *photoDefImage;  //
+@property (nonatomic, strong) UIImage *photoSingleSelImage; // 单选
+@property (nonatomic, strong) UIImage *photoSingleDefImage;
 @property (nonatomic, strong) UIImage *photoOriginSelImage;
 @property (nonatomic, strong) UIImage *photoOriginDefImage;
 @property (nonatomic, strong) UIImage *photoPreviewOriginDefImage;
@@ -249,24 +251,26 @@
 
 #pragma mark -
 /// Appearance / 外观颜色 + 按钮文字
-@property (nonatomic, strong) UIColor *oKButtonTitleColorNormal;
-@property (nonatomic, strong) UIColor *oKButtonTitleColorDisabled;
 @property (nonatomic, strong) UIColor *naviBgColor;
 @property (nonatomic, strong) UIColor *naviTitleColor;
-@property (nonatomic, strong) UIColor *naviSubTitleColor;
+@property (nonatomic, strong) UIColor *naviTitleSelectColor;
 @property (nonatomic, strong) UIFont *naviTitleFont;
-@property (nonatomic, strong) UIColor *barItemTextColor;
-@property (nonatomic, strong) UIFont *barItemTextFont;
 @property (nonatomic, strong) UIColor *backBgColor;
 @property (nonatomic, strong) UIColor *toolBarLineColor;
+@property (nonatomic, strong) UIColor *oKButtonTitleColorNormal;
+@property (nonatomic, strong) UIColor *oKButtonTitleColorDisabled;
 @property (nonatomic, strong) UIFont *doneBtnTextFont;
+
+@property (nonatomic, copy) NSString *doneBtnTitleStr;
+@property (nonatomic, copy) NSString *previewBtnTitleStr;
+
+// epal 用不到的
+@property (nonatomic, strong) UIColor *barItemTextColor;
+@property (nonatomic, strong) UIFont *barItemTextFont;
 @property (nonatomic, strong) UIFont *toolBarTextFont;
 @property (nonatomic, strong) UIColor *toolBarTextColor;
 @property (nonatomic, strong) UIColor *toolBarTextDisabledColor;
-
-@property (nonatomic, copy) NSString *doneBtnTitleStr;
 @property (nonatomic, copy) NSString *cancelBtnTitleStr;
-@property (nonatomic, copy) NSString *previewBtnTitleStr;
 @property (nonatomic, copy) NSString *fullImageBtnTitleStr;
 @property (nonatomic, copy) NSString *settingBtnTitleStr;
 @property (nonatomic, copy) NSString *processHintStr;
@@ -360,6 +364,8 @@
 @property (nonatomic, assign) NSInteger columnNumber;
 @property (assign, nonatomic) BOOL isFirstAppear;
 - (void)configTableView;
+
+- (void)showTableViewAnimation:(BOOL)isShow;
 
 // 选中
 @property (nonatomic, copy) void(^selectedBlock)(TZAlbumModel *model);
