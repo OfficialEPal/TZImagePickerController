@@ -363,6 +363,8 @@
 @interface TZAlbumPickerController : UIViewController
 @property (nonatomic, assign) NSInteger columnNumber;
 @property (assign, nonatomic) BOOL isFirstAppear;
+@property (nonatomic, weak) UITableView *tagTableView;
+
 - (void)configTableView;
 
 - (void)showTableViewAnimation:(BOOL)isShow;

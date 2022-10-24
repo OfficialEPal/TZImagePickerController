@@ -837,6 +837,7 @@
                 
                 if (!self->_tableView) {
                     self->_tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+                    self.tagTableView = self->_tableView;
                     self->_tableView.rowHeight = 108;
                     self->_tableView.backgroundColor = imagePickerVc.backBgColor;
                     self->_tableView.tableFooterView = [[UIView alloc] init];

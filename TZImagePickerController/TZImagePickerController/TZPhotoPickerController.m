@@ -389,7 +389,7 @@ static CGFloat itemMargin = 5;
     if (isShow) {
         self.albumPicker.view.alpha = 0.2;
         self.albumPicker.view.hidden = NO;
-        
+        self.albumPicker.tagTableView.alpha = 1.0;
         // 需要显示
         [UIView animateWithDuration:0.35 delay:0 options:(UIViewAnimationOptionCurveEaseOut) animations:^{
             self.albumPicker.view.alpha = 1.0;
@@ -406,7 +406,8 @@ static CGFloat itemMargin = 5;
     } else {
         // 需要隐藏
         [UIView animateWithDuration:0.35 delay:0 options:(UIViewAnimationOptionCurveEaseIn) animations:^{
-            self.albumPicker.view.alpha = 0.2;
+            self.albumPicker.view.alpha = 0.0;
+            self.albumPicker.tagTableView.alpha = 0.0;
             [self.albumPicker showTableViewAnimation:NO];
             UIImage *image = tzImagePickerVc.titlArrowImage;
             UIImage *flipImage = [UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:UIImageOrientationUp];

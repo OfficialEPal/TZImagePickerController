@@ -404,6 +404,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     self.backgroundColor = [UIColor clearColor];
     self.accessoryType = UITableViewCellAccessoryNone;
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     return self;
 }
 
