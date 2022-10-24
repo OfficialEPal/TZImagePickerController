@@ -309,7 +309,7 @@
     }
     [_doneButton sizeToFit];
     CGFloat doneWidth = MAX(44, _doneButton.tz_width + 20);
-    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 12, 10, doneWidth, 32);
+    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 20, 10, doneWidth, 32);
     _numberImageView.frame = CGRectMake(_doneButton.tz_left - 24 - 5, 10, 24, 24);
     _numberLabel.frame = _numberImageView.frame;
     
@@ -682,7 +682,7 @@
     
     [_doneButton sizeToFit];
     CGFloat doneWidth = MAX(44, _doneButton.tz_width + 20);
-    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 12, 10, doneWidth, 32);
+    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 20, 10, doneWidth, 32);
 }
 
 - (void)showPhotoBytes {

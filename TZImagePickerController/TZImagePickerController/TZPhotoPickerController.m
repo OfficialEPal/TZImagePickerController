@@ -432,7 +432,7 @@ static CGFloat itemMargin = 5;
     
     [_doneButton sizeToFit];
     CGFloat doneWidth = MAX(44, _doneButton.tz_width + 20);
-    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 12, 10, doneWidth, 32);
+    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 20, 10, doneWidth, 32);
 }
 
 #pragma mark - Layout
@@ -491,11 +491,11 @@ static CGFloat itemMargin = 5;
     if (!tzImagePickerVc.allowPreview) {
         previewWidth = 0.0;
     }
-    _previewButton.frame = CGRectMake(10, 3, previewWidth, 44);
+    _previewButton.frame = CGRectMake(20, 3, previewWidth, 44);
     _previewButton.tz_width = !tzImagePickerVc.showSelectBtn ? 0 : previewWidth;
     [_doneButton sizeToFit];
     CGFloat doneWidth = MAX(44, _doneButton.tz_width + 20);
-    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 12, 10, doneWidth, 32);
+    _doneButton.frame = CGRectMake(self.view.tz_width - doneWidth - 20, 10, doneWidth, 32);
     _divideLine.frame = CGRectMake(0, 0, self.view.tz_width, 1);
     
     [TZImageManager manager].columnNumber = [TZImageManager manager].columnNumber;
