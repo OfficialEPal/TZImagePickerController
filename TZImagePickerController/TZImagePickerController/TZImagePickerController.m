@@ -840,6 +840,7 @@
                     self.tagTableView = self->_tableView;
                     self->_tableView.rowHeight = 108;
                     self->_tableView.backgroundColor = imagePickerVc.backBgColor;
+                    self->_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
                     self->_tableView.tableFooterView = [[UIView alloc] init];
                     self->_tableView.dataSource = self;
                     self->_tableView.delegate = self;

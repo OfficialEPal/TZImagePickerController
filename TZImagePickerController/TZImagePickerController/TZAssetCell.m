@@ -469,6 +469,7 @@
     if (_lineView == nil) {
         UIView *view = [[UIView alloc] init];
         [self.contentView addSubview:_lineView];
+        view.backgroundColor = [UIColor lightGrayColor];
         _lineView = view;
     }
     return _lineView;
