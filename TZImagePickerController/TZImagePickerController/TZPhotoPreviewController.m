@@ -111,8 +111,8 @@
     [_backButton addTarget:self action:@selector(backButtonClick) forControlEvents:UIControlEventTouchUpInside];
     
     _selectButton = [[UIButton alloc] initWithFrame:CGRectZero];
-    [_selectButton setImage:tzImagePickerVc.photoSingleSelImage forState:UIControlStateNormal];
-    [_selectButton setImage:tzImagePickerVc.photoSingleDefImage forState:UIControlStateSelected];
+    [_selectButton setImage:tzImagePickerVc.photoSingleDefImage forState:UIControlStateNormal];
+    [_selectButton setImage:tzImagePickerVc.photoSingleSelImage forState:UIControlStateSelected];
     _selectButton.imageView.clipsToBounds = YES;
     _selectButton.imageEdgeInsets = UIEdgeInsetsMake(10, 0, 10, 0);
     _selectButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -124,6 +124,8 @@
     _indexLabel.font = [UIFont systemFontOfSize:14];
     _indexLabel.textColor = [UIColor whiteColor];
     _indexLabel.textAlignment = NSTextAlignmentCenter;
+    // v5.2.0 去掉数字显示
+    _indexLabel.hidden = YES;
     
     [_naviBar addSubview:_selectButton];
     [_naviBar addSubview:_indexLabel];
@@ -591,9 +593,9 @@
     if (_selectButton.isSelected && _tzImagePickerVc.showSelectedIndex && _tzImagePickerVc.showSelectBtn) {
         NSString *index = [NSString stringWithFormat:@"%d", (int)([_tzImagePickerVc.selectedAssetIds indexOfObject:model.asset.localIdentifier] + 1)];
         _indexLabel.text = index;
-        _indexLabel.hidden = NO;
+//        _indexLabel.hidden = NO;
     } else {
-        _indexLabel.hidden = YES;
+//        _indexLabel.hidden = YES;
     }
     // UI 不显示这个
 //    _numberLabel.text = [NSString stringWithFormat:@"%zd",_tzImagePickerVc.selectedModels.count];

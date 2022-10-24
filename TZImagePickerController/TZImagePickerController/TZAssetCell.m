@@ -396,9 +396,6 @@
 @interface TZAlbumCell ()
 @property (weak, nonatomic) UIImageView *posterImageView;
 
-@property (weak, nonatomic) UILabel *titleLabel;
-@property (weak, nonatomic) UILabel *countLabel;
-
 @end
 
 @implementation TZAlbumCell
@@ -441,7 +438,7 @@
     NSInteger titleHeight = 24;
     self.titleLabel.frame = CGRectMake(96, 24, self.tz_width - 96 - 52, titleHeight);
     self.countLabel.frame = CGRectMake(96, 56, self.tz_width - 96 - 52, titleHeight);
-    self.lineView.frame = CGRectMake(24, 106.5, self.tz_width - 24 - 24, 1);
+    self.lineView.frame = CGRectMake(24, 106, self.tz_width - 24 - 24, 1);
     
     if (self.albumCellDidLayoutSubviewsBlock) {
         self.albumCellDidLayoutSubviewsBlock(self, _posterImageView, _titleLabel, _countLabel);
@@ -504,7 +501,6 @@
         selectedCountButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         selectedCountButton.layer.cornerRadius = 10;
         selectedCountButton.clipsToBounds = YES;
-        selectedCountButton.backgroundColor = [UIColor redColor];
         [selectedCountButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         selectedCountButton.titleLabel.font = [UIFont systemFontOfSize:15];
         [self.contentView addSubview:selectedCountButton];

@@ -47,6 +47,8 @@ typedef enum : NSUInteger {
 
 @property (weak, nonatomic) UIButton *selectedCountButton;
 @property (weak, nonatomic) UIView *lineView;
+@property (weak, nonatomic) UILabel *titleLabel;
+@property (weak, nonatomic) UILabel *countLabel;
 
 @property (nonatomic, copy) void (^albumCellDidSetModelBlock)(TZAlbumCell *cell, UIImageView *posterImageView, UILabel *titleLabel);
 @property (nonatomic, copy) void (^albumCellDidLayoutSubviewsBlock)(TZAlbumCell *cell, UIImageView *posterImageView, UILabel *titleLabel, UILabel *descLabel);
