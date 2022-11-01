@@ -368,13 +368,16 @@ static CGFloat itemMargin = 5;
 - (void)setupTitleText:(NSString *)text {
     [self.titleButton setTitle:text forState:UIControlStateNormal];
     
+    UILabel *label = [[UILabel alloc] init];
+    label.font = self.titleButton.titleLabel.font;
+    label.text = text;
+    [label sizeToFit];
+    
     CGFloat padding = 0;
     //图片在右，文字在左
     self.titleButton.titleEdgeInsets = UIEdgeInsetsMake(0, -(20 + padding/2), 0, (20 + padding/2));
-    [self.titleButton.titleLabel sizeToFit];
-    self.titleButton.imageEdgeInsets = UIEdgeInsetsMake(0, (self.titleButton.titleLabel.frame.size.width+ padding/2), 0, -(self.titleButton.titleLabel.frame.size.width+ padding/2));
-    
-    self.titleBGView.bounds = CGRectMake(0, 0, self.titleButton.titleLabel.frame.size.width + 50, 32);
+    self.titleButton.imageEdgeInsets = UIEdgeInsetsMake(0, (label.frame.size.width+ padding/2), 0, -(label.frame.size.width+ padding/2));
+    self.titleBGView.bounds = CGRectMake(0, 0, label.frame.size.width + 50, 32);
 }
 
 - (void)showAlbumPicker {
@@ -526,9 +529,9 @@ static CGFloat itemMargin = 5;
         self.albumPicker.selectedBlock = ^(TZAlbumModel *model) {
             weakSelf.model = model;
             weakSelf.notReloadLayout = NO;
-            [weakSelf setupTitleText:model.name];
             [weakSelf reloadImageData];
             [weakSelf showAlbumPicker];
+            [weakSelf setupTitleText:model.name];
         };
         [self showAlbumPicker];
     }
