@@ -123,7 +123,7 @@
     
     _doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _doneButton.titleLabel.font = self.imagePickerVc.doneBtnTextFont;
-    _doneButton.layer.cornerRadius = 14.0;
+    _doneButton.layer.cornerRadius = 16.0;
     _doneButton.layer.masksToBounds = YES;
     [_doneButton addTarget:self action:@selector(doneButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [_doneButton setTitle:self.imagePickerVc.doneBtnTitleStr forState:UIControlStateNormal];

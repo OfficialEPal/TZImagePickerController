@@ -128,7 +128,7 @@
     TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
     if (tzImagePickerVc) {
         _doneButton.titleLabel.font = tzImagePickerVc.doneBtnTextFont;
-        _doneButton.layer.cornerRadius = 14.0;
+        _doneButton.layer.cornerRadius = 16.0;
         _doneButton.layer.masksToBounds = YES;
         if (tzImagePickerVc.doneBtnNormalImage) {
             [_doneButton setBackgroundImage:tzImagePickerVc.doneBtnNormalImage forState:UIControlStateNormal];
