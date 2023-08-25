@@ -357,6 +357,8 @@
 // Decide asset can be selected
 // 决定照片能否被选中
 - (BOOL)isAssetCanBeSelected:(PHAsset *)asset;
+
+- (UIView *)optionFooterCustomView;
 @end
 
 

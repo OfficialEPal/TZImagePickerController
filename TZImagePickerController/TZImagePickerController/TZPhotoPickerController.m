@@ -45,6 +45,7 @@
 @property (nonatomic, assign) BOOL isSelectOriginalPhoto;
 @property (nonatomic, strong) TZCollectionView *collectionView;
 @property (nonatomic, strong) TZAuthLimitedFooterTipView *authFooterTipView;
+@property (nonatomic, strong) UIView *optionDelegateProvideView;
 @property (nonatomic, strong) UILabel *noDataLabel;
 @property (strong, nonatomic) UICollectionViewFlowLayout *layout;
 @property (nonatomic, strong) UIImagePickerController *imagePickerVc;
@@ -249,7 +250,13 @@ static CGFloat itemMargin = 5;
     } else {
         [_collectionView reloadData];
     }
-
+    
+    TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
+    if(tzImagePickerVc && [tzImagePickerVc.pickerDelegate respondsToSelector:@selector(optionFooterCustomView)]){
+        UIView *view = [tzImagePickerVc.pickerDelegate optionFooterCustomView];
+        self.optionDelegateProvideView = view;
+        [self.view addSubview:self.optionDelegateProvideView];
+    }
     if (!_authFooterTipView && _authorizationLimited) {
         _authFooterTipView = [[TZAuthLimitedFooterTipView alloc] initWithFrame:CGRectMake(0, 0, self.view.tz_width, 80)];
         UITapGestureRecognizer *footTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openSettingsApplication)];
@@ -487,8 +494,16 @@ static CGFloat itemMargin = 5;
         toolBarTop = self.view.tz_height - toolBarHeight - navigationHeight;
     }
     _bottomToolBar.frame = CGRectMake(0, toolBarTop, self.view.tz_width, toolBarHeight);
+    if(_optionDelegateProvideView){
+        CGFloat footerOptionViewH = _optionDelegateProvideView.bounds.size.height;
+        CGFloat footerOptionViewY = _bottomToolBar ? toolBarTop - footerOptionViewH : self.view.tz_height - footerOptionViewH;
+        _optionDelegateProvideView.frame = CGRectMake(0, footerOptionViewY, self.view.tz_width, footerOptionViewH);
+    }
     if (_authFooterTipView) {
         CGFloat footerTipViewY = _bottomToolBar ? toolBarTop - footerTipViewH : self.view.tz_height - footerTipViewH;
+        if (_optionDelegateProvideView){
+            footerTipViewY -= _optionDelegateProvideView.bounds.size.height;
+        }
         _authFooterTipView.frame = CGRectMake(0, footerTipViewY, self.view.tz_width, footerTipViewH);;
     }
     CGFloat previewWidth = [tzImagePickerVc.previewBtnTitleStr boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:16]} context:nil].size.width + 2;

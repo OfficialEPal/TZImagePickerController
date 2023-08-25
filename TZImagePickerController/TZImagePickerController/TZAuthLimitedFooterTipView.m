@@ -70,7 +70,7 @@
         _tipLable.text = [NSString stringWithFormat:[NSBundle tz_localizedStringForKey:@"Allow %@ to access your all photos"], appName];
         _tipLable.numberOfLines = 0;
         _tipLable.font = [UIFont systemFontOfSize:14];
-        _tipLable.textColor = [UIColor colorWithRed:0.40 green:0.40 blue:0.40 alpha:1.0];
+        _tipLable.textColor = [UIColor colorWithRed:173/255.0 green:173/255.0 blue:191/255.0 alpha:1];//rgba(173, 173, 191, 1) [UIColor colorWithRed:0.40 green:0.40 blue:0.40 alpha:1.0];
     }
     return _tipLable;
 }
