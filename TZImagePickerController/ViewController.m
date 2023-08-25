@@ -798,6 +798,12 @@
     return YES;
 }
 
+- (UIView *)optionFooterCustomView{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.tz_width, 50)];
+    view.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.5];
+    return view;
+}
+
 #pragma mark - Click Event
 
 - (void)deleteBtnClik:(UIButton *)sender {

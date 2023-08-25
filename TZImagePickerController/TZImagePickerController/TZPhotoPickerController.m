@@ -461,6 +461,7 @@ static CGFloat itemMargin = 5;
     CGFloat collectionViewHeight = 0;
     CGFloat naviBarHeight = self.navigationController.navigationBar.tz_height;
     CGFloat footerTipViewH = _authorizationLimited ? 80 : 0;
+    CGFloat optionDelegateViewH = _optionDelegateProvideView != nil ? _optionDelegateProvideView.bounds.size.height : 0;
     BOOL isStatusBarHidden = [UIApplication sharedApplication].isStatusBarHidden;
     BOOL isFullScreen = self.view.tz_height == [UIScreen mainScreen].bounds.size.height;
     CGFloat toolBarHeight = 50 + [TZCommonTools tz_safeAreaInsets].bottom;
@@ -472,6 +473,7 @@ static CGFloat itemMargin = 5;
         collectionViewHeight = tzImagePickerVc.showSelectBtn ? self.view.tz_height - toolBarHeight : self.view.tz_height;
     }
     collectionViewHeight -= footerTipViewH;
+    collectionViewHeight -= optionDelegateViewH;
 
     _collectionView.frame = CGRectMake(0, top, self.view.tz_width, collectionViewHeight);
     _albumPicker.view.frame = CGRectMake(0, top, self.view.tz_width, [UIScreen mainScreen].bounds.size.height - top);
