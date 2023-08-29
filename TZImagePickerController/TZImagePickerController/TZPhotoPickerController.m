@@ -282,6 +282,7 @@ static CGFloat itemMargin = 5;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
     // Determine the size of the thumbnails to request from the PHCachingImageManager
     CGFloat scale = 2.0;
     if ([UIScreen mainScreen].bounds.size.width > 600) {
