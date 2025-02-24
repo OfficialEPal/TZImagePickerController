@@ -97,6 +97,7 @@ static CGFloat itemMargin = 5;
         _albumPicker.isFirstAppear = YES;
         _albumPicker.columnNumber = _columnNumber;
         [_albumPicker showTableViewAnimation:YES];
+        _albumPicker.view.frame = CGRectMake(0, 0, self.view.tz_width, self.view.bounds.size.height);// ld fix: initial frame
         [self.view addSubview:self.albumPicker.view];
         [self addChildViewController:self.albumPicker];
     }
@@ -480,7 +481,7 @@ static CGFloat itemMargin = 5;
     collectionViewHeight -= optionDelegateViewH;
 
     _collectionView.frame = CGRectMake(0, top, self.view.tz_width, collectionViewHeight);
-    _albumPicker.view.frame = CGRectMake(0, top, self.view.tz_width, [UIScreen mainScreen].bounds.size.height - top);
+    _albumPicker.view.frame = CGRectMake(0, 0, self.view.tz_width, self.view.bounds.size.height);//ld fix: origin y: top, origin height: [UIScreen mainScreen].bounds.size.height - top
     _noDataLabel.frame = _collectionView.bounds;
     CGFloat itemWH = (self.view.tz_width - (self.columnNumber + 1) * itemMargin) / self.columnNumber - 0.5;
     _layout.itemSize = CGSizeMake(itemWH, itemWH);
